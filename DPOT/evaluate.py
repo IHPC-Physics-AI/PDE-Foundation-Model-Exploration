@@ -239,6 +239,9 @@ with torch.no_grad():
             test_l2_step += loss.item()
             test_l2_full += myloss(pred, yy, mask=msk)
 
+
+            ### The animation and plotting blocks below are custom additions, uncomment either one to use
+
             ## --- START OF ANIMATION BLOCK ---
             # from matplotlib.animation import FuncAnimation
             #
@@ -281,8 +284,9 @@ with torch.no_grad():
             # # Using 'pillow' writer for GIF. Use 'ffmpeg' if want .mp4
             # ani.save(gif_path, writer='pillow', fps=15)
             # plt.close()
-            # --- END OF ANIMATION BLOCK ---
+            ## --- END OF ANIMATION BLOCK ---
 
+            ## --- START OF PLOTTING BLOCK ---
             # pred_np = pred.detach().cpu().numpy()
             # print('PRED SHAPE: ', pred_np.shape)
             # gt_np = yy.detach().cpu().numpy()
@@ -322,7 +326,7 @@ with torch.no_grad():
             #     plt.savefig(save_path, dpi=100, bbox_inches='tight')
             #     plt.close()
             #     print(f"Saved sim {batch_idx} channel {c} summary plot")
-
+            ## --- END OF PLOTTING BLOCK ---
 
         test_l2_step_avg, test_l2_full_avg = test_l2_step / ntests[id] / (yy.shape[-2] / args.T_bundle), test_l2_full / ntests[id]
         test_l2_steps.append(test_l2_step_avg)

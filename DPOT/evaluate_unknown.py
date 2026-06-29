@@ -245,13 +245,13 @@ with torch.no_grad():
             gt_np = yy.detach().cpu().numpy()
             print('GT SHAPE: ', gt_np.shape)
 
-
+            ## --- START OF CUSTOM ADDITION ---
             N_EXTRAP = 10
             extrap_preds = []
-            # override: use real t=100 (yy) instead of predicted t=100
-            # extrap_xx = torch.cat((xx[..., args.T_bundle:, :], yy), dim=-2)
-            extrap_xx = torch.cat((xx_orig[..., 1:, :], yy), dim=-2) #t=91-99 (real) + t=100 (real)
+            extrap_xx = yy[..., -args.T_in:, :] # Use ground truth t=91-100 (real)
             print(f'extrap_xx seeded with real GT: {extrap_xx.shape}')
+
+            #Feed t91-100 into model for prediction
             for step in range(N_EXTRAP):
                 im_ext, _ = model(extrap_xx)
                 extrap_preds.append(im_ext)
@@ -260,26 +260,9 @@ with torch.no_grad():
             extrap_pred = torch.cat(extrap_preds, dim=-2)
             extrap_np = extrap_pred.squeeze(0).cpu().numpy()  # (128, 128, N_EXTRAP, 4)
 
+            # Plotting code block
             sample_idx = 0
             N_CHANNELS_DATA = 4
-            # for c in range(N_CHANNELS_DATA):
-            #     fig, axs = plt.subplots(N_EXTRAP, 1, figsize=(6, 5 * N_EXTRAP))
-            #
-            #     for row in range(N_EXTRAP):
-            #         abs_t = 101 + row
-            #         pred_plot = extrap_np[..., row, c]
-            #
-            #         im_ax = axs[row].imshow(pred_plot, cmap='viridis')
-            #         axs[row].set_title(f'Pred | T: {abs_t} | Ch: {c}')
-            #         axs[row].axis('off')
-            #         fig.colorbar(im_ax, ax=axs[row], fraction=0.046, pad=0.04)
-            #
-            #     plt.suptitle(f'Extrapolation | Sim {batch_idx} | Channel {c}', fontsize=16, y=1.001)
-            #     plt.tight_layout()
-            #     save_path = os.path.join(desktop_plots_dir, f'sim{batch_idx:03d}_ch{c}_extrap.png')
-            #     plt.savefig(save_path, dpi=100, bbox_inches='tight')
-            #     plt.close()
-            #     print(f'Saved extrap plot: sim {batch_idx} channel {c}')
             for c in range(N_CHANNELS_DATA):
                 fig, axs = plt.subplots(N_EXTRAP, 2, figsize=(12, 5 * N_EXTRAP))
 
@@ -325,6 +308,8 @@ with torch.no_grad():
 
                 print(f'Saved comparison plot: channel {c}')
 
+                ## --- END OF CUSTOM ADDITION ---
+
         test_l2_step_avg, test_l2_full_avg = test_l2_step / ntests[id] / (yy.shape[-2] / args.T_bundle), test_l2_full / ntests[id]
         test_l2_steps.append(test_l2_step_avg)
         test_l2_fulls.append(test_l2_full_avg.item())
@@ -336,6 +321,7 @@ for i in range(len(test_paths)):
 print('Total time {} total steps {} Avg time {}'.format(time_test, total_steps, time_test/total_steps))
 
 
-# [0.005538433790206909]
-# dr_pdb: 0.00554
-# Total time 0.313431978225708 total steps 5 Avg time 0.0626863956451416
+#Results
+# [0.02853776142001152]
+# dr_pdb: 0.02854
+# Total time 5.395862817764282 total steps 91 Avg time 0.0592951957996075

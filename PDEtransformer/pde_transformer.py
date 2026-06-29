@@ -1495,7 +1495,6 @@ class PDEImpl(nn.Module):
             task_emb = self.__getattr__(f"task_embedder_{i}")(task, self.training)
             task_emb = task_emb.view((B, C) + task_emb.shape[1:])
 
-            #Check the value PDE_PARAMETER_SCALING
             c = (t_emb + self.SIMULATION_TIME_SCALING * simulation_time_emb + channel_type_emb +
                  pde_type_emb + self.SIMULATION_DT_SCALING * simulation_dt_emb + task_emb + self.PDE_PARAMETER_SCALING * pde_parameter_emb)
 
