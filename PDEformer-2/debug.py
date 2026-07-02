@@ -39,7 +39,7 @@ print(f'Total num of samples: {len(pde_dags_list)}')
 
 
 #x_plot, y_plot for 128x128
-#For snap_t, 4 timesteps are selected from [0,1]. However, this can be adjusted to any number of timesteps within [0,1]
+#For snap_t, 4 timesteps are selected from [0,1]. However, this can be adjusted to any number of timesteps
 x_plot, y_plot = np.meshgrid(np.linspace(0, 1, 129)[:-1], np.linspace(0, 1, 129)[:-1], indexing="ij")
 snap_t=np.linspace(0, 1, 4)
 
